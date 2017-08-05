@@ -6,29 +6,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="cn.lkllkllkl.conficurableframelayoutsample.MainActivity">
 
-    <cn.lkllkllkl.conficurableframelayout.DragableImageView
+    <cn.lkllkllkl.conficurableframelayout.DraggableImageView
         android:background="@color/gray"
-        android:id="@+id/dragable_image_view_1"
+        android:id="@+id/draggable_image_view_1"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginLeft="90dp"
         android:layout_marginTop="30dp"
         app:revert="true"
-        app:has_popup_window="true"
         app:max_scale="4"
         app:boundary="bottom"
         app:trigger_distance="100dp"
         />
 
-    <cn.lkllkllkl.conficurableframelayout.DragableImageView
+    <cn.lkllkllkl.conficurableframelayout.DraggableImageView
         android:background="@color/gray"
-        android:id="@+id/dragable_image_view_2"
+        android:id="@+id/draggable_image_view_2"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginTop="290dp"
         android:layout_marginLeft="90dp"
         app:revert="false"
-        app:has_popup_window="true"
         app:max_scale="4"
         app:boundary="top"
         app:trigger_distance="3dp"/>

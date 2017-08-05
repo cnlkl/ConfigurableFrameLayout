@@ -3,7 +3,7 @@ package cn.lkllkllkl.conficurableframelayoutsample;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import cn.lkllkllkl.conficurableframelayout.DragableImageView;
+import cn.lkllkllkl.conficurableframelayout.DraggableImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,15 +11,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DragableImageView dragableImageView1 =
-                (DragableImageView) findViewById(R.id.dragable_image_view_1);
-        DragableImageView dragableImageView2 =
-                (DragableImageView) findViewById(R.id.dragable_image_view_2);
+        DraggableImageView draggableImageView1 =
+                (DraggableImageView) findViewById(R.id.draggable_image_view_1);
+        DraggableImageView draggableImageView2 =
+                (DraggableImageView) findViewById(R.id.draggable_image_view_2);
         GlideApp.with(this)
                 .load(R.drawable.black)
-                .into(dragableImageView1);
+                .into(draggableImageView1);
         GlideApp.with(this)
                 .load(R.drawable.cat)
-                .into(dragableImageView2);
+                .into(draggableImageView2);
     }
 }
