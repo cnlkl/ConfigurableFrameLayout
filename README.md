@@ -4,7 +4,7 @@ A custom FrameLayout that allows you to drag exchange ImageView picture
 [introduction](http://www.jianshu.com/p/dbc0c94434c1)
 
 ## ScreenShot
-![screenshot]()
+![screenshot](https://raw.githubusercontent.com/cnlkl/ConfigurableFrameLayout/master/screenshots/drag_img.gif)
 
 ## Add dependency
 ### **Step 1.** Add the JitPack repository to your build file
