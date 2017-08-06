@@ -1,9 +1,9 @@
-package cn.lkllkllkl.conficurableframelayoutsample;
+package cn.lkllkllkl.configurableframelayoutsample;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import cn.lkllkllkl.conficurableframelayout.DraggableImageView;
+import cn.lkllkllkl.configurableframelayout.DraggableImageView;
 
 public class MainActivity extends AppCompatActivity {
 
