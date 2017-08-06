@@ -20,7 +20,7 @@ import java.util.HashMap;
  * 可对其中的DraggableImageView控件通过拖拽实现图片交换的FrameLayout.
  */
 
-public class ConfigurableFrameLayout extends FrameLayout {
+public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDragListener {
 
     private static final String TAG = ConfigurableFrameLayout.class.getSimpleName();
 
@@ -93,8 +93,8 @@ public class ConfigurableFrameLayout extends FrameLayout {
     }
 
     private View mCurrentChildView; // 当前正在处理触摸事件的子View
-    private boolean mCanDrag = false; // 是否可以将图片拖拽出控件
-    private boolean isPointerCountChanged = false; // 触点数量是否减少
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -106,73 +106,27 @@ public class ConfigurableFrameLayout extends FrameLayout {
         }
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                // 只在ACTION_DOWN时对事件进行分发，事件只能交由一个子View处理
+                // 获取位于触点的子View
                 mCurrentChildView = viewInXY(event.getX(), event.getY());
+                // 判断子View是否可以触发拖拽事件，可以的为其设置触发时的监听事件
+                if (mCurrentChildView instanceof TriggerDraggable) {
+                    ((TriggerDraggable) mCurrentChildView).setOnTriggerDragListener(this);
+                }
+                // 只在ACTION_DOWN时对事件进行分发，事件只能交由一个子View处理
                 if (mCurrentChildView != null) {
                     handled =dispatchTouchEventToChild(event, mCurrentChildView);
                 }
                 break;
-            case MotionEvent.ACTION_MOVE:
-                /* 只有处于不可拖拽状态时才判断是否触发拖拽事件，
-                 * 且本次触摸事件流触点数量未减少的情况，才判断是否触发拖拽事件
-                 */
-                if (!mCanDrag && !isPointerCountChanged && triggerDrag(event)) {
-                    mCanDrag = true;
-                }
-                if (mCanDrag) {
-                    // 跟随手指拖拽中间控件
-                    dragInterpolationImageView(event);
-                }
-                break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                if (mCanDrag) {
-                    // 拖拉结束，处理后续任务
-                    onDragFinish(event);
-                }
                 // 设置当前处理事件流的子View为null
                 mCurrentChildView = null;
-                // ACTION_UP意味着本次事件流结束，所以将记录触点数量是否减少的标志位清除
-                isPointerCountChanged = false;
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                // 触点减少
-                isPointerCountChanged = true;
+
                 break;
         }
 
         if (!handled) handled = super.onTouchEvent(event);
         return handled;
-    }
-
-    /**
-     * 判断是否触发拖拽事件
-     * @param event 触摸事件
-     * @return 符合触发条件则返回true，否则返回false
-     */
-    private boolean triggerDrag(MotionEvent event) {
-        boolean canDrag = false;
-        if (mCurrentChildView instanceof DraggableImageView) {
-            // 当前触点坐标
-            final float x = event.getX();
-            final float y = event.getY();
-
-            // 触发拖拉事件的距离
-            final float triggerDistance =
-                    ((DraggableImageView) mCurrentChildView).getTriggerDistance();
-
-            // 超过指定边界指定距离则触发拖拽事件
-            boolean[] boundary = ((DraggableImageView) mCurrentChildView).getBoundary();
-
-            // 判断某个边界是否可触发拖拽事件并且达到了触发条件
-            if (boundary[0] && mCurrentChildView.getLeft() - x > triggerDistance
-                    || boundary[1] && mCurrentChildView.getTop() - y > triggerDistance
-                    || boundary[2] && x - mCurrentChildView.getRight() > triggerDistance
-                    || boundary[3] && y - mCurrentChildView.getBottom() > triggerDistance) {
-                mCanDrag = true;
-            }
-        }
-        return canDrag;
     }
 
     // 判断拖拽的ImageView是否已经设置了当前处理事件的子View的图片
@@ -221,7 +175,7 @@ public class ConfigurableFrameLayout extends FrameLayout {
      * 并设置各子控件的最终状态
      * @param event 当前触摸事件
      */
-    private void onDragFinish(MotionEvent event) {
+    private void dragFinish(MotionEvent event) {
         ImageView curImgView = null;
         if (mCurrentChildView instanceof ImageView) {
             curImgView = (ImageView) mCurrentChildView;
@@ -239,7 +193,6 @@ public class ConfigurableFrameLayout extends FrameLayout {
             mInterpolationImageView.setVisibility(GONE);
             // 设置中间控件不含当前处理事件的子View的图片
             mInterpolationHasImg = false;
-            mCanDrag = false;
         }
     }
 
@@ -300,5 +253,29 @@ public class ConfigurableFrameLayout extends FrameLayout {
 
         event.offsetLocation(-offsetX, -offsetY);
         return handled;
+    }
+
+    @Override
+    public void onDrag(MotionEvent event) {
+        // 由于传递过来的事件是相对于子View的坐标，所以需要进行变换
+        final float offsetX = mCurrentChildView.getLeft() - getScrollX();
+        final float offsetY = mCurrentChildView.getTop() - getScrollY();
+        event.offsetLocation(offsetX, offsetY);
+
+        dragInterpolationImageView(event);
+
+        event.offsetLocation(-offsetX, -offsetY);
+    }
+
+    @Override
+    public void onDragFinish(MotionEvent event) {
+        // 由于传递过来的事件是相对于子View的坐标，所以需要进行变换
+        final float offsetX = mCurrentChildView.getLeft() - getScrollX();
+        final float offsetY = mCurrentChildView.getTop() - getScrollY();
+        event.offsetLocation(offsetX, offsetY);
+
+        dragFinish(event);
+
+        event.offsetLocation(-offsetX, -offsetY);
     }
 }
