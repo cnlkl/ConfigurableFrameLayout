@@ -14,7 +14,6 @@
         android:layout_marginLeft="90dp"
         android:layout_marginTop="30dp"
         app:max_scale="4"
-        app:revert="false"
         app:boundary_bottom="true"
         app:trigger_distance="100dp"
         />
@@ -27,7 +26,6 @@
         android:layout_height="150dp"
         android:layout_marginTop="270dp"
         android:layout_marginLeft="50dp"
-        app:revert="false"
         app:max_scale="4"
         app:boundary_top="true"
         app:boundary_right="true"
@@ -41,7 +39,6 @@
         android:layout_marginTop="290dp"
         android:layout_marginLeft="220dp"
         app:max_scale="4"
-        app:revert="false"
         app:boundary_left="true"
         app:boundary_top="true"
         app:trigger_distance="3dp"/>

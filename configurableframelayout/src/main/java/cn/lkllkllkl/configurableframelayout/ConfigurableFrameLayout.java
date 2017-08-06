@@ -2,6 +2,7 @@ package cn.lkllkllkl.configurableframelayout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,7 +18,7 @@ import android.widget.ImageView;
 import java.util.HashMap;
 
 /**
- * 可对其中的DraggableImageView控件通过拖拽实现图片交换的FrameLayout.
+ * 可对实现了TriggerDraggable控件通过拖拽实现图片交换的FrameLayout.
  */
 
 public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDragListener {
@@ -169,8 +170,7 @@ public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDra
     }
 
     /**
-     * 拖拽结束，通常为ACTION_UP时拖拽事件结束，调用该方法对一些标志位进行清理
-     * 并设置各子控件的最终状态
+     * 判断是否需要交换图片，并清理一些标志位，设置各子控件的最终状态
      * @param event 当前触摸事件
      */
     private void dragFinish(MotionEvent event) {
@@ -216,8 +216,9 @@ public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDra
             toBmp = ((BitmapDrawable) toImgView.getDrawable()).getBitmap();
         }
         // 交换两者图片
-        if (toBmp != null) fromImgView.setImageBitmap(toBmp);
         if (fromBmp != null) toImgView.setImageBitmap(fromBmp);
+        if (toBmp != null) fromImgView.setImageBitmap(toBmp);
+
     }
 
     /**
@@ -255,7 +256,7 @@ public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDra
 
     @Override
     public void onDrag(MotionEvent event) {
-        // 由于传递过来的事件是相对于子View的坐标，所以需要进行变换
+        // 由于传递过来的事件是相对于子View的坐标，所以需要变换为相对Layout的坐标
         final float offsetX = mCurrentChildView.getLeft() - getScrollX();
         final float offsetY = mCurrentChildView.getTop() - getScrollY();
         event.offsetLocation(offsetX, offsetY);
@@ -267,7 +268,7 @@ public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDra
 
     @Override
     public void onDragFinish(MotionEvent event) {
-        // 由于传递过来的事件是相对于子View的坐标，所以需要进行变换
+        // 由于传递过来的事件是相对于子View的坐标，所以需要变换为相对Layout的坐标
         final float offsetX = mCurrentChildView.getLeft() - getScrollX();
         final float offsetY = mCurrentChildView.getTop() - getScrollY();
         event.offsetLocation(offsetX, offsetY);
