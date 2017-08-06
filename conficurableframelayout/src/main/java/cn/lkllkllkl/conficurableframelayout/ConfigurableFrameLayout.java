@@ -100,8 +100,8 @@ public class ConfigurableFrameLayout extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         // 事件是否被子View消费
         boolean handled = false;
-        // 当前事件流若已被分发给某个子View处理，且不处于可拖拽的状态，则将后续事件都分发给该子View
-        if (mCurrentChildView != null && !mCanDrag) {
+        // 当前事件流若已被分发给某个子View处理，则将后续事件都分发给该子View
+        if (mCurrentChildView != null) {
             handled = dispatchTouchEventToChild(event, mCurrentChildView);
         }
         switch (event.getActionMasked()) {
@@ -126,8 +126,10 @@ public class ConfigurableFrameLayout extends FrameLayout {
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                // 拖拉结束，处理后续任务
-                onDragFinish(event);
+                if (mCanDrag) {
+                    // 拖拉结束，处理后续任务
+                    onDragFinish(event);
+                }
                 // 设置当前处理事件流的子View为null
                 mCurrentChildView = null;
                 // ACTION_UP意味着本次事件流结束，所以将记录触点数量是否减少的标志位清除
@@ -144,39 +146,30 @@ public class ConfigurableFrameLayout extends FrameLayout {
     }
 
     /**
-     * 判断是否触发拖拉事件
+     * 判断是否触发拖拽事件
      * @param event 触摸事件
      * @return 符合触发条件则返回true，否则返回false
      */
     private boolean triggerDrag(MotionEvent event) {
         boolean canDrag = false;
         if (mCurrentChildView instanceof DraggableImageView) {
+            // 当前触点坐标
+            final float x = event.getX();
+            final float y = event.getY();
+
             // 触发拖拉事件的距离
-            float triggerDistance =
+            final float triggerDistance =
                     ((DraggableImageView) mCurrentChildView).getTriggerDistance();
 
             // 超过指定边界指定距离则触发拖拽事件
-            switch (((DraggableImageView) mCurrentChildView).getBoundary()) {
-                case DraggableImageView.LEFT_BOUNDARY:
-                    if (mCurrentChildView.getLeft() - event.getX() > triggerDistance) {
-                        canDrag = true;
-                    }
-                    break;
-                case DraggableImageView.TOP_BOUNDARY:
-                    if (mCurrentChildView.getTop() - event.getY() > triggerDistance) {
-                        canDrag = true;
-                    }
-                    break;
-                case DraggableImageView.RIGHT_BOUNDARY:
-                    if (event.getX() - mCurrentChildView.getRight() > triggerDistance) {
-                        canDrag = true;
-                    }
-                    break;
-                case DraggableImageView.BOTTOM_BOUNDARY:
-                    if (event.getY() - mCurrentChildView.getBottom() > triggerDistance) {
-                        canDrag = true;
-                    }
-                    break;
+            boolean[] boundary = ((DraggableImageView) mCurrentChildView).getBoundary();
+
+            // 判断某个边界是否可触发拖拽事件并且达到了触发条件
+            if (boundary[0] && mCurrentChildView.getLeft() - x > triggerDistance
+                    || boundary[1] && mCurrentChildView.getTop() - y > triggerDistance
+                    || boundary[2] && x - mCurrentChildView.getRight() > triggerDistance
+                    || boundary[3] && y - mCurrentChildView.getBottom() > triggerDistance) {
+                mCanDrag = true;
             }
         }
         return canDrag;
@@ -234,7 +227,7 @@ public class ConfigurableFrameLayout extends FrameLayout {
             curImgView = (ImageView) mCurrentChildView;
         }
 
-        if (mCanDrag && curImgView != null) {
+        if (curImgView != null) {
             // 判断当前触点是否在其他子View内，若是则交换两者图片
             View v = viewInXY(event.getX(), event.getY());
             if (v instanceof ImageView) {

@@ -15,11 +15,16 @@ public class MainActivity extends AppCompatActivity {
                 (DraggableImageView) findViewById(R.id.draggable_image_view_1);
         DraggableImageView draggableImageView2 =
                 (DraggableImageView) findViewById(R.id.draggable_image_view_2);
+        DraggableImageView draggableImageView3 =
+                (DraggableImageView) findViewById(R.id.draggable_image_view_3);
         GlideApp.with(this)
                 .load(R.drawable.black)
                 .into(draggableImageView1);
         GlideApp.with(this)
                 .load(R.drawable.cat)
                 .into(draggableImageView2);
+        GlideApp.with(this)
+                .load(R.drawable.cat)
+                .into(draggableImageView3);
     }
 }

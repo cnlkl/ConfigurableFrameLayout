@@ -15,12 +15,14 @@ public class DraggableImageView extends TransformativeImageView{
     private static final String TAG = DraggableImageView.class.getSimpleName();
     private static final int DEFAULT_TRIGGER_DISTANCE = 100; // 默认触发拖拽的距离为100px
 
-    public static final int LEFT_BOUNDARY = 0; // 左边界
-    public static final int TOP_BOUNDARY = 1; // 上边界
-    public static final int RIGHT_BOUNDARY = 2; // 右边界
-    public static final int BOTTOM_BOUNDARY = 3; // 下边界
-
-    private int mBoundary = BOTTOM_BOUNDARY; // 触发拖拉事件边界
+    /**
+     * 可触发拖拽事件的边界,若数组某个index的变量为true，则表示该index对应的边界可以触发拖拽事件；
+     * 默认所有边界均不可触发拖拽事件
+     * index: {0, 1, 2, 3} -> boundary: {left, top, right, bottom}
+     *
+     * 例：mBoundary = {true, false, false, true} 表示左边界与下边界可触发拖拽事件
+     */
+    private boolean[] mBoundary = new boolean[4];
     private float mTriggerDistance = DEFAULT_TRIGGER_DISTANCE; // 触发拖拉事件的距离
 
     public DraggableImageView(Context context) {
@@ -41,8 +43,14 @@ public class DraggableImageView extends TransformativeImageView{
         TypedArray typedArray =
                 context.obtainStyledAttributes(attributes, R.styleable.DraggableImageView);
 
-        mBoundary = typedArray.getInt(
-                R.styleable.DraggableImageView_boundary, BOTTOM_BOUNDARY);
+        mBoundary[0] = typedArray.getBoolean(
+                R.styleable.DraggableImageView_boundary_left, false);
+        mBoundary[1] = typedArray.getBoolean(
+                R.styleable.DraggableImageView_boundary_top, false);
+        mBoundary[2] = typedArray.getBoolean(
+                R.styleable.DraggableImageView_boundary_right, false);
+        mBoundary[3] = typedArray.getBoolean(
+                R.styleable.DraggableImageView_boundary_bottom, false);
         mTriggerDistance = typedArray.getDimension(
                 R.styleable.DraggableImageView_trigger_distance, DEFAULT_TRIGGER_DISTANCE);
 
@@ -50,16 +58,14 @@ public class DraggableImageView extends TransformativeImageView{
     }
 
     /**
-     * 获取触发拖拽事件的边界
+     * 可触发拖拽事件的边界,若数组某个index的变量为true，则表示该index对应的边界可以触发拖拽事件；
+     * index: {0, 1, 2, 3} -> boundary: {left, top, right, bottom}
      *
-     * {@link #LEFT_BOUNDARY}
-     * {@link #TOP_BOUNDARY}
-     * {@link #RIGHT_BOUNDARY}
-     * {@link #BOTTOM_BOUNDARY}
+     * 例：{true, false, false, true} 表示左边界与下边界可触发拖拽事件
      *
-     * @return 边界方向
+     * @return 表示每个边界是否可触发拖拽事件的数组
      */
-    public int getBoundary() {
+    public boolean[] getBoundary() {
         return mBoundary;
     }
 
