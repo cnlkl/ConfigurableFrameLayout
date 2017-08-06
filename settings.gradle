@@ -1,1 +1,1 @@
-include ':app', ':conficurableframelayout'
+include ':app', ':configurableframelayout'

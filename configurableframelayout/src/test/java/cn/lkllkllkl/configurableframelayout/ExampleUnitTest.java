@@ -1,4 +1,4 @@
-package cn.lkllkllkl.conficurableframelayout;
+package cn.lkllkllkl.configurableframelayout;
 
 import org.junit.Test;
 

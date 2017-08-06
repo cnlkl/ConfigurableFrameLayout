@@ -1,4 +1,4 @@
-package cn.lkllkllkl.conficurableframelayout;
+package cn.lkllkllkl.configurableframelayout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -93,8 +93,6 @@ public class ConfigurableFrameLayout extends FrameLayout implements OnTriggerDra
     }
 
     private View mCurrentChildView; // 当前正在处理触摸事件的子View
-
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
