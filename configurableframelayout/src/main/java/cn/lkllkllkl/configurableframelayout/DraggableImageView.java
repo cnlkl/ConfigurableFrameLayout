@@ -2,6 +2,7 @@ package cn.lkllkllkl.configurableframelayout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -12,10 +13,10 @@ import cn.lkllkllkl.transformativeimageview.TransformativeImageView;
  * 可拖拽ImageView
  */
 
-public class DraggableImageView extends TransformativeImageView implements TriggerDraggable{
+public class DraggableImageView extends TransformativeImageView implements TriggerDraggable {
     private static final String TAG = DraggableImageView.class.getSimpleName();
     private static final int DEFAULT_TRIGGER_DISTANCE = 100; // 默认触发拖拽的距离为100px
-    private OnTriggerDragListener mOnTriggerDragListener;
+    private OnTriggerDragListener mOnTriggerDragListener; // 拖拽事件监听器
 
     /**
      * 可触发拖拽事件的边界,若数组某个index的变量为true，则表示该index对应的边界可以触发拖拽事件；
@@ -26,8 +27,6 @@ public class DraggableImageView extends TransformativeImageView implements Trigg
      */
     private boolean[] mBoundary = new boolean[4];
     private float mTriggerDistance = DEFAULT_TRIGGER_DISTANCE; // 触发拖拉事件的距离
-    private boolean isPointerCountChanged = false; // 本次触摸事件流中触点数量是否减少
-    private boolean mCanDrag = false; // 是否可以将图片拖拽出控件
 
     public DraggableImageView(Context context) {
         this(context, null);
@@ -61,6 +60,8 @@ public class DraggableImageView extends TransformativeImageView implements Trigg
         typedArray.recycle();
     }
 
+    private boolean isPointerCountChanged = false; // 本次触摸事件流中触点数量是否减少
+    private boolean mCanDrag = false; // 是否可以将图片拖拽出控件
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -93,6 +94,26 @@ public class DraggableImageView extends TransformativeImageView implements Trigg
         }
 
         return true;
+    }
+
+    /**
+     * 重写平移方法，此方法会在{@link TransformativeImageView#onTouchEvent(MotionEvent)}中调用
+     * @param midPoint 当前触点的中点
+     */
+    @Override
+    protected void translate(PointF midPoint) {
+        float dx = midPoint.x - mLastMidPoint.x;
+        float dy = midPoint.y - mLastMidPoint.y;
+        mLastMidPoint.set(midPoint);
+        // TODO px转为dp
+        // 图片不能被拖动到不可见，当只剩15px可见时不可拖动
+        if (mImageRect.left + dx > getWidth() - 15
+                || mImageRect.right + dx < 15
+                || mImageRect.top + dy > getHeight() - 15
+                || mImageRect.bottom + dy < 15) {
+            return;
+        }
+        mMatrix.postTranslate(dx, dy);
     }
 
     /**
